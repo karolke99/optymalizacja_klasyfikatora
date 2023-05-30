@@ -34,6 +34,7 @@ def generate_best_value_plot(best_value):
 def get_training_results(df_norm, y, estimator):
     split = 5
     cv = StratifiedKFold(n_splits=split)
+
     result_sum = 0
 
     for train, test in cv.split(df_norm, y):

@@ -6,6 +6,8 @@ from deap import creator
 from deap import tools
 import pandas as pd
 from sklearn.exceptions import ConvergenceWarning
+from sklearn.preprocessing import MinMaxScaler
+from sklearn import model_selection
 
 from KNN import KnnManager
 from MLP import MlpManager
@@ -75,6 +77,16 @@ min_record = list()
 if __name__ == "__main__":
     pool = multiprocessing.Pool(processes=4)
     toolbox.register("map", pool.map)
+
+    ######################################## No optimization ##########################
+    mms = MinMaxScaler()
+    df_norm = mms.fit_transform(df)
+    clf = manager.get_default_classifier()
+    scores = model_selection.cross_val_score(clf, df_norm, y, cv=5, scoring='accuracy', n_jobs=-1)
+    print("--------------------------------------------------------------------------------------------")
+    print(f"No optimization accuracy: {scores.mean()}")
+    print("--------------------------------------------------------------------------------------------")
+
 
     while g < numberIteration:
         g = g + 1
