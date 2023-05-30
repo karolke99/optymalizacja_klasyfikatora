@@ -1,3 +1,6 @@
+import numpy as np
+from sklearn import metrics
+from sklearn.model_selection import StratifiedKFold
 from sklearn.neural_network import MLPClassifier
 from sklearn.preprocessing import MinMaxScaler
 import random
@@ -66,6 +69,75 @@ def mlp_parameters(number_of_features, icls):
 
     n_iter_no_change = random.randint(10, 30)
     genome.append(n_iter_no_change)
+
+    return icls(genome)
+
+
+def mlp_parameters_with_selection(number_of_features, icls):
+    genome = list()
+
+    hidden_layer_sizes = random.randint(25, 75)
+    genome.append(hidden_layer_sizes)
+
+    list_activation = ['identity', 'logistic', 'tanh', 'relu']
+    genome.append(list_activation[random.randint(0, 3)])
+
+    list_solver = ['lbfgs', 'sgd', 'adam']
+    genome.append(list_solver[random.randint(0, 2)])
+
+    alpha = random.uniform(0.0001, 0.1)
+    genome.append(alpha)
+
+    batch_size = random.choice([8, 32, 64])
+    genome.append(batch_size)
+
+    list_learning_rate = ['constant', 'invscaling', 'adaptive']
+    genome.append(list_learning_rate[random.randint(0, 2)])
+
+    learning_rate_init = random.uniform(0.001, 0.1)
+    genome.append(learning_rate_init)
+
+    power_t = random.uniform(0, 1)
+    genome.append(power_t)
+
+    max_iter = random.randint(100, 500)
+    genome.append(max_iter)
+
+    shuffle = random.choice([True, False])
+    genome.append(shuffle)
+
+    tol = random.uniform(0.0001, 0.1)
+    genome.append(tol)
+
+    warm_start = random.choice([True, False])
+    genome.append(warm_start)
+
+    momentum = random.uniform(0, 1)
+    genome.append(momentum)
+
+    nesterovs_momentum = random.choice([True, False])
+    genome.append(nesterovs_momentum)
+
+    early_stopping = random.choice([True, False])
+    genome.append(early_stopping)
+
+    validation_fraction = random.uniform(0, 1)
+    genome.append(validation_fraction)
+
+    beta_1 = random.uniform(0, 1)
+    genome.append(beta_1)
+
+    beta_2 = random.uniform(0, 1)
+    genome.append(beta_2)
+
+    epsilon = random.uniform(0.00000001, 0.1)
+    genome.append(epsilon)
+
+    n_iter_no_change = random.randint(10, 30)
+    genome.append(n_iter_no_change)
+
+    for i in range(0, number_of_features):
+        genome.append(random.randint(0, 1))
 
     return icls(genome)
 
@@ -148,7 +220,122 @@ def mutation_mlp(individual):
         individual[19] = random.randint(10, 30)
 
 
+def mutation_mlp_with_selection(individual):
+    number_parameter = random.randint(0, len(individual) - 1)
+
+    if number_parameter == 0:
+        individual[0] = random.randint(50, 150)
+    elif number_parameter == 1:
+        list_activation = ['identity', 'logistic', 'tanh', 'relu']
+        individual[1] = list_activation[random.randint(0, 3)]
+    elif number_parameter == 2:
+        list_solver = ['lbfgs', 'sgd', 'adam']
+        individual[2] = list_solver[random.randint(0, 2)]
+    elif number_parameter == 3:
+        individual[3] = random.uniform(0.0001, 0.1)
+    elif number_parameter == 4:
+        individual[4] = random.choice([32, 64, 128, 256])
+    elif number_parameter == 5:
+        list_learning_rate = ['constant', 'invscaling', 'adaptive']
+        individual[5] = list_learning_rate[random.randint(0, 2)]
+    elif number_parameter == 6:
+        individual[6] = random.uniform(0.001, 0.1)
+    elif number_parameter == 7:
+        individual[7] = random.uniform(0, 1)
+    elif number_parameter == 8:
+        individual[8] = random.randint(100, 500)
+    elif number_parameter == 9:
+        individual[9] = random.choice([True, False])
+    elif number_parameter == 10:
+        individual[10] = random.uniform(0, 1)
+    elif number_parameter == 11:
+        individual[11] = random.choice([True, False])
+    elif number_parameter == 12:
+        individual[12] = random.uniform(0, 1)
+    elif number_parameter == 13:
+        individual[13] = random.choice([True, False])
+    elif number_parameter == 14:
+        individual[14] = random.choice([True, False])
+    elif number_parameter == 15:
+        individual[15] = random.uniform(0, 1)
+    elif number_parameter == 16:
+        individual[16] = random.uniform(0, 1)
+    elif number_parameter == 17:
+        individual[17] = random.uniform(0, 1)
+    elif number_parameter == 18:
+        individual[18] = random.uniform(0.00000001, 0.1)
+    elif number_parameter == 19:
+        individual[19] = random.randint(10, 30)
+    else:
+        if individual[number_parameter] == 0:
+            individual[number_parameter] = 1
+        else:
+            individual[number_parameter] = 0
+
+
+def mlp_parameter_feature_fitness(y, df, number_of_attributes, individual):
+    split = 5
+    cv = StratifiedKFold(n_splits=split)
+    y = np.array(y)
+
+    list_columns_to_drop = []
+
+    for i in range(number_of_attributes, len(individual)):
+        if individual[i] == 0:
+            list_columns_to_drop.append(i - (len(individual) - number_of_attributes))
+            # list_columns_to_drop.append(i - number_of_attributes)
+
+    df_selected_features = df.drop(df.columns[list_columns_to_drop], axis=1, inplace=False)
+
+    mms = MinMaxScaler()
+    df_norm = mms.fit_transform(df_selected_features)
+
+    estimator = MLPClassifier(
+        hidden_layer_sizes=individual[0],
+        activation=individual[1],
+        solver=individual[2],
+        alpha=individual[3],
+        batch_size=individual[4],
+        learning_rate=individual[5],
+        learning_rate_init=individual[6],
+        power_t=individual[7],
+        max_iter=individual[8],
+        shuffle=individual[9],
+        tol=individual[10],
+        warm_start=individual[11],
+        momentum=individual[12],
+        nesterovs_momentum=individual[13],
+        early_stopping=individual[14],
+        validation_fraction=individual[15],
+        beta_1=individual[16],
+        beta_2=individual[17],
+        epsilon=individual[18],
+        n_iter_no_change=individual[19]
+    )
+
+    result_sum = 0
+
+    for train, test in cv.split(df_norm, y):
+        estimator.fit(df_norm[train], y[train])
+        predicted = estimator.predict(df_norm[test])
+        expected = y[test]
+        cm = metrics.confusion_matrix(expected, predicted)
+        tn = cm[0, 0]
+        fp = cm[0, 1]
+        fn = cm[1, 0]
+        tp = cm[1, 1]
+        # tn, fp, fn, tp = metrics.confusion_matrix(expected, predicted).ravel()
+
+        result = (tp + tn) / (tp + fp + tn + fn)
+        result_sum = result_sum + result
+
+    return result_sum / split,
+
+
 class MlpManager:
+
+    def get_parameters_with_selection(self):
+        return mlp_parameters_with_selection
 
     def get_parameters(self):
         return mlp_parameters
@@ -156,5 +343,14 @@ class MlpManager:
     def get_parameters_fitness(self):
         return mlp_parameters_fitness
 
+    def get_parameters_fitness_with_selection(self):
+        return mlp_parameter_feature_fitness
+
     def get_mutation(self):
         return mutation_mlp
+
+    def get_mutation_with_selection(self):
+        return mutation_mlp_with_selection
+
+    def get_default_classifier(self):
+        return MLPClassifier()

@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import numpy as np
 from sklearn.model_selection import StratifiedKFold
 from sklearn import metrics
 
@@ -36,10 +37,17 @@ def get_training_results(df_norm, y, estimator):
     result_sum = 0
 
     for train, test in cv.split(df_norm, y):
+        y = np.array(y)
+
         estimator.fit(df_norm[train], y[train])
         predicted = estimator.predict(df_norm[test])
         expected = y[test]
-        tn, fp, fn, tp = metrics.confusion_matrix(expected, predicted).ravel()
+        cm = metrics.confusion_matrix(expected, predicted)
+        tn = cm[0, 0]
+        fp = cm[0, 1]
+        fn = cm[1, 0]
+        tp = cm[1, 1]
+        # tn, fp, fn, tp = metrics.confusion_matrix(expected, predicted).ravel()
 
         result = (tp + tn) / (tp + fp + tn + fn)
         result_sum = result_sum + result

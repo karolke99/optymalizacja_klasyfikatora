@@ -13,6 +13,21 @@ from LR import LrManager
 from util import generate_mean_plot, generate_standard_deviation_plot, generate_best_value_plot
 import multiprocessing
 
+# pd.set_option('display.max_columns', None)
+#
+# df = pd.read_csv("hcvdat0.csv", sep=",")
+# df = df.drop(df.columns[0], axis=1)
+# df['Sex'] = df['Sex'].map(lambda x: 1 if x == 'f' else 0)
+# df['Category'] = df['Category'].replace('0s=suspect Blood Donor', '4')
+# df['Category'] = df['Category'].apply(lambda x: int(x[0]))
+# df = df.dropna()
+# df = df[df['ALP'] != 'NA']
+# df = df[df['ALB'] != 'NA']
+# df = df[df['CHOL'] != 'NA']
+# df = df[df['PROT'] != 'NA']
+# y = df['Category']
+
+###### SVC
 pd.set_option('display.max_columns', None)
 
 df = pd.read_csv("data.csv", sep=",")
@@ -31,17 +46,18 @@ probabilityCrossover = 0.8
 numberIteration = 50
 warnings.filterwarnings("ignore", category=ConvergenceWarning)
 warnings.filterwarnings("ignore", category=UserWarning)
+warnings.filterwarnings("ignore", category=FutureWarning)
 manager = LrManager()
 
 creator.create("FitnessMax", base.Fitness, weights=(1.0,))
 creator.create("Individual", list, fitness=creator.FitnessMax)
 
 toolbox = base.Toolbox()
-toolbox.register('individual', manager.get_parameters(), number_of_attributes, creator.Individual)
+toolbox.register('individual', manager.get_parameters_with_selection(), number_of_attributes, creator.Individual)
 toolbox.register("population", tools.initRepeat, list, toolbox.individual)
-toolbox.register("evaluate", manager.get_parameters_fitness(), y, df, number_of_attributes)
+toolbox.register("evaluate", manager.get_parameters_fitness_with_selection(), y, df, number_of_attributes)
 toolbox.register("select", tools.selTournament, tournsize=5)
-toolbox.register("mutate", manager.get_mutation())
+toolbox.register("mutate", manager.get_mutation_with_selection())
 
 pop = toolbox.population(n=sizePopulation)
 
