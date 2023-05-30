@@ -9,6 +9,7 @@ from sklearn.exceptions import ConvergenceWarning
 
 from KNN import KnnManager
 from MLP import MlpManager
+from LR import LrManager
 from util import generate_mean_plot, generate_standard_deviation_plot, generate_best_value_plot
 import multiprocessing
 
@@ -30,7 +31,7 @@ probabilityCrossover = 0.8
 numberIteration = 50
 warnings.filterwarnings("ignore", category=ConvergenceWarning)
 warnings.filterwarnings("ignore", category=UserWarning)
-manager = MlpManager()
+manager = LrManager()
 
 creator.create("FitnessMax", base.Fitness, weights=(1.0,))
 creator.create("Individual", list, fitness=creator.FitnessMax)
