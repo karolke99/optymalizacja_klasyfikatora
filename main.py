@@ -8,8 +8,11 @@ import pandas as pd
 from sklearn.exceptions import ConvergenceWarning
 from sklearn.preprocessing import MinMaxScaler
 from sklearn import model_selection
+from sklearn.naive_bayes import ComplementNB
 
 from KNN import KnnManager
+from RDT import rdtManager
+from RF import RfManager
 from MLP import MlpManager
 from LR import LrManager
 from util import generate_mean_plot, generate_standard_deviation_plot, generate_best_value_plot
@@ -17,27 +20,27 @@ import multiprocessing
 
 # pd.set_option('display.max_columns', None)
 #
-# df = pd.read_csv("hcvdat0.csv", sep=",")
-# df = df.drop(df.columns[0], axis=1)
-# df['Sex'] = df['Sex'].map(lambda x: 1 if x == 'f' else 0)
-# df['Category'] = df['Category'].replace('0s=suspect Blood Donor', '4')
-# df['Category'] = df['Category'].apply(lambda x: int(x[0]))
-# df = df.dropna()
-# df = df[df['ALP'] != 'NA']
-# df = df[df['ALB'] != 'NA']
-# df = df[df['CHOL'] != 'NA']
-# df = df[df['PROT'] != 'NA']
-# y = df['Category']
+df = pd.read_csv("hcvdat0.csv", sep=",")
+df = df.drop(df.columns[0], axis=1)
+df['Sex'] = df['Sex'].map(lambda x: 1 if x == 'f' else 0)
+df['Category'] = df['Category'].replace('0s=suspect Blood Donor', '4')
+df['Category'] = df['Category'].apply(lambda x: int(x[0]))
+df = df.dropna()
+df = df[df['ALP'] != 'NA']
+df = df[df['ALB'] != 'NA']
+df = df[df['CHOL'] != 'NA']
+df = df[df['PROT'] != 'NA']
+y = df['Category']
 
 ###### SVC
-pd.set_option('display.max_columns', None)
-
-df = pd.read_csv("data.csv", sep=",")
-y = df['Status']
-
-df.drop('Status', axis=1, inplace=True)
-df.drop('ID', axis=1, inplace=True)
-df.drop('Recording', axis=1, inplace=True)
+# pd.set_option('display.max_columns', None)
+#
+# df = pd.read_csv("data.csv", sep=",")
+# y = df['Status']
+#
+# df.drop('Status', axis=1, inplace=True)
+# df.drop('ID', axis=1, inplace=True)
+# df.drop('Recording', axis=1, inplace=True)
 
 number_of_attributes = len(df.columns)
 
@@ -45,7 +48,7 @@ number_of_attributes = len(df.columns)
 sizePopulation = 100
 probabilityMutation = 0.4
 probabilityCrossover = 0.8
-numberIteration = 50
+numberIteration = 100
 warnings.filterwarnings("ignore", category=ConvergenceWarning)
 warnings.filterwarnings("ignore", category=UserWarning)
 warnings.filterwarnings("ignore", category=FutureWarning)

@@ -13,7 +13,7 @@ from util import get_training_results
 def rf_parameters(number_of_features, icls):
     genome = list()
 
-    list_of_trees = random.randint(1, 100)
+    list_of_trees = random.randint(1, 5)
     genome.append(list_of_trees)
 
     list_criterion = ['gini', 'entropy', 'log_loss']
@@ -28,10 +28,10 @@ def rf_parameters(number_of_features, icls):
     list_minimum_samples_leaf = random.randint(1, 30)
     genome.append(list_minimum_samples_leaf)
 
-    list_minimum_fraction_leaf = random.uniform(0, 0.5)
+    list_minimum_fraction_leaf = random.uniform(0.1, 0.5)
     genome.append(list_minimum_fraction_leaf)
 
-    list_max_features = ['sqrt', 'log2', random.uniform(0, 1), random.randint(0, 2000)]
+    list_max_features = ['sqrt', 'log2', random.uniform(0.1, 1), random.randint(1, number_of_features)]
     genome.append(list_max_features[random.randint(0, 3)])
 
     list_max_leaf_nodes = random.randint(2, 200)
@@ -46,6 +46,8 @@ def rf_parameters(number_of_features, icls):
     if genome[-1]:
         list_oob_score = [True, False]
         genome.append(list_oob_score[random.randint(0, 1)])
+    else:
+        genome.append(0)
 
     list_verbose = random.randint(1, 50)
     genome.append(list_verbose)
@@ -74,7 +76,7 @@ def rf_parameters_fitness(y, df, number_of_attributes, individual):
         max_leaf_nodes = individual[7],
         min_impurity_decrease = individual[8],
         bootstrap = individual[9],
-        oob_score = individual[10],
+        # oob_score = individual[10],
         verbose = individual[11],
         warm_start = individual[12],
         ccp_alpha = individual[13],
@@ -86,7 +88,7 @@ def rf_parameters_fitness(y, df, number_of_attributes, individual):
 def rf_parameters_with_selection(number_of_features, icls):
     genome = list()
 
-    list_of_trees = random.randint(1, 100)
+    list_of_trees = random.randint(1, 5)
     genome.append(list_of_trees)
 
     list_criterion = ['gini', 'entropy', 'log_loss']
@@ -101,10 +103,10 @@ def rf_parameters_with_selection(number_of_features, icls):
     list_minimum_samples_leaf = random.randint(1, 30)
     genome.append(list_minimum_samples_leaf)
 
-    list_minimum_fraction_leaf = random.uniform(0, 0.5)
+    list_minimum_fraction_leaf = random.uniform(0.1, 0.5)
     genome.append(list_minimum_fraction_leaf)
 
-    list_max_features = ['sqrt', 'log2', random.uniform(0, 1), random.randint(0, 2000)]
+    list_max_features = ['sqrt', 'log2', random.uniform(0.1, 1), random.randint(1, number_of_features)]
     genome.append(list_max_features[random.randint(0, 3)])
 
     list_max_leaf_nodes = random.randint(2, 200)
@@ -119,6 +121,8 @@ def rf_parameters_with_selection(number_of_features, icls):
     if genome[-1]:
         list_oob_score = [True, False]
         genome.append(list_oob_score[random.randint(0, 1)])
+    else:
+        genome.append(0)
 
     list_verbose = random.randint(1, 50)
     genome.append(list_verbose)
@@ -139,7 +143,7 @@ def mutation_rf(individual):
     number_parameter = random.randint(0, len(individual) - 1)
 
     if number_parameter == 0:
-        individual[0] = random.randint(1, 100)
+        individual[0] = random.randint(1, 5)
     if number_parameter == 1:
         list_criterion = ['gini', 'entropy', 'log_loss']
         individual[1] = list_criterion[random.randint(0, 2)]
@@ -150,9 +154,9 @@ def mutation_rf(individual):
     elif number_parameter == 4:
         individual[4] = random.randint(1, 30)
     elif number_parameter == 5:
-        individual[5] = random.uniform(0, 0.5)
+        individual[5] = random.uniform(0.1, 0.5)
     elif number_parameter == 6:
-        list_max_features = ['sqrt', 'log2', random.uniform(0,1), random.randint(0,2000)]
+        list_max_features = ['sqrt', 'log2', random.uniform(0.1, 1), random.randint(1, 13)]
         individual[6] = list_max_features[random.randint(0, 3)]
     elif number_parameter == 7:
         individual[7] = random.randint(2, 200)
@@ -165,6 +169,8 @@ def mutation_rf(individual):
         if individual[9]:
             list_oob_score = [True, False]
             individual[10] = list_oob_score[random.randint(0, 1)]
+        else:
+            individual[10] = 0
     elif number_parameter == 11:
         individual[11] = random.randint(1, 50)
     elif number_parameter == 12:
@@ -179,7 +185,7 @@ def mutation_rf_with_selection(individual):
     number_parameter = random.randint(0, len(individual) - 1)
 
     if number_parameter == 0:
-        individual[0] = random.randint(1, 100)
+        individual[0] = random.randint(1, 5)
     if number_parameter == 1:
         list_criterion = ['gini', 'entropy', 'log_loss']
         individual[1] = list_criterion[random.randint(0, 2)]
@@ -190,9 +196,9 @@ def mutation_rf_with_selection(individual):
     elif number_parameter == 4:
         individual[4] = random.randint(1, 30)
     elif number_parameter == 5:
-        individual[5] = random.uniform(0, 0.5)
+        individual[5] = random.uniform(0.1, 0.5)
     elif number_parameter == 6:
-        list_max_features = ['sqrt', 'log2', random.uniform(0, 1), random.randint(0, 2000)]
+        list_max_features = ['sqrt', 'log2', random.uniform(0.1, 1), random.randint(1, 13)]
         individual[6] = list_max_features[random.randint(0, 3)]
     elif number_parameter == 7:
         individual[7] = random.randint(2, 200)
@@ -205,6 +211,8 @@ def mutation_rf_with_selection(individual):
         if individual[9]:
             list_oob_score = [True, False]
             individual[10] = list_oob_score[random.randint(0, 1)]
+        else:
+            individual[10] = 0
     elif number_parameter == 11:
         individual[11] = random.randint(1, 50)
     elif number_parameter == 12:
@@ -247,7 +255,7 @@ def rf_parameter_feature_fitness(y, df, number_of_attributes, individual):
         max_leaf_nodes=individual[7],
         min_impurity_decrease=individual[8],
         bootstrap=individual[9],
-        oob_score=individual[10],
+        # oob_score=individual[10],
         verbose=individual[11],
         warm_start=individual[12],
         ccp_alpha=individual[13],
@@ -272,7 +280,7 @@ def rf_parameter_feature_fitness(y, df, number_of_attributes, individual):
     return result_sum / split,
 
 
-class rfManager:
+class RfManager:
 
     def get_parameters_with_selection(self):
         return rf_parameters_with_selection
